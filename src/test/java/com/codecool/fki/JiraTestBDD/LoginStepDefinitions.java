@@ -75,6 +75,28 @@ public class LoginStepDefinitions {
         invalidCredentialsNotification.isDisplayed();
     }
 
+
+    @Given("I have a valid username")
+    public void iHaveAValidUsername() {
+        USERNAME = dotenv.get("USER_NAME");
+    }
+
+    @When("I try to login with valid username and {string} password")
+    public void iTryToLoginWithValidUsernameAndInvalidPassword(String password) {
+        usernameInput = chromeDriver.findElement(By.id("login-form-username"));
+        passwordInput = chromeDriver.findElement(By.id("login-form-password"));
+        loginButton = chromeDriver.findElement(By.id("login-form-submit"));
+        usernameInput.sendKeys(USERNAME);
+        passwordInput.sendKeys(password);
+        loginButton.click();
+    }
+
+    @Then("captcha become visible")
+    public void captchaBecomeVisible() {
+        WebElement captchaField = chromeDriver.findElement(By.id("captcha"));
+        captchaField.isDisplayed();
+    }
+
     @After
     public void tearDown(Scenario scenario) {
         if (scenario.isFailed()) {
