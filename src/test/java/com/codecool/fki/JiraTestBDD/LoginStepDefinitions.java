@@ -101,7 +101,7 @@ public class LoginStepDefinitions {
     public void tearDown(Scenario scenario) {
         if (scenario.isFailed()) {
             File screenshot = ((TakesScreenshot) chromeDriver).getScreenshotAs(OutputType.FILE);
-            String filename = String.format(".errorPicture/image%d.png", errorCounter);
+            String filename = String.format(".errorPicture/login%d.png", errorCounter);
             try {
                 FileUtils.copyFile(screenshot, new File(filename));
                 errorCounter++;
