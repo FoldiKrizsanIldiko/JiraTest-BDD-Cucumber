@@ -9,3 +9,12 @@ Feature: Login
     When I log in  with valid username and password
     Then I am redirected to dashboard page
 
+  Scenario Outline: login attempt with invalid username and password
+    Then warning message appears
+
+    Examples:
+      | username   | password   |
+      | micimacko  | malacka    |
+      | 123        | abcde      |
+      | {username} | {password} |
+

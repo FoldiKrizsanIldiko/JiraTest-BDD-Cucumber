@@ -59,6 +59,22 @@ public class LoginStepDefinitions {
         wait.until(ExpectedConditions.urlContains("Dashboard"));
     }
 
+    @When("I try to log in with {string} and {string}")
+    public void iTryToLogInWithAnd(String username, String password) {
+        usernameInput = chromeDriver.findElement(By.id("login-form-username"));
+        passwordInput = chromeDriver.findElement(By.id("login-form-password"));
+        loginButton = chromeDriver.findElement(By.id("login-form-submit"));
+        usernameInput.sendKeys(username);
+        passwordInput.sendKeys(password);
+        loginButton.click();
+    }
+
+    @Then("warning message appears")
+    public void warningMessageAppears() {
+        WebElement invalidCredentialsNotification = chromeDriver.findElement(By.xpath("//p[contains(text(), 'Sorry')]"));
+        invalidCredentialsNotification.isDisplayed();
+    }
+
     @After
     public void tearDown(Scenario scenario) {
         if (scenario.isFailed()) {
