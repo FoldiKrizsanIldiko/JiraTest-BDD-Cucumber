@@ -20,11 +20,13 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.function.Function;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class EditIssueStepDefinitions {
 
     private final WebDriver chromeDriver = new ChromeDriver();
-    private final WebDriverWait wait = new WebDriverWait(chromeDriver, Duration.ofSeconds(25));
+    private final WebDriverWait wait = new WebDriverWait(chromeDriver, Duration.ofSeconds(15));
     private static final String homePage = "https://jira-auto.codecool.metastage.net/login.jsp";
     private int errorCounter = 0;
     private static final Dotenv dotenv = Dotenv.configure()
@@ -33,10 +35,11 @@ public class EditIssueStepDefinitions {
             .load();
 
     private static final String PASSWORD1 = dotenv.get("PASSWORD");
-   private static final String USERNAME1 = dotenv.get("USER_NAME");
+    private static final String USERNAME1 = dotenv.get("USER_NAME");
 
-  private static final String nameOfNewIssue="fki-BDD-testIssue";
+    private static final String nameOfNewIssue = "fki-BDD-testIssue";
 
+//Background:
     @Given("I am logged in on Jira account")
     public void iAmLoggedInOnJiraAccount() {
         chromeDriver.get(homePage);
@@ -51,101 +54,131 @@ public class EditIssueStepDefinitions {
     @And("I am on {string} issues page")
     public void iAmOnIssuesPage(String project) {
         String url = String.format("https://jira-auto.codecool.metastage.net/projects/%1$s/issues/%1$s?filter=allopenissues", project);
-    chromeDriver.get(url);
+        chromeDriver.get(url);
 
     }
 
     @And("I create a new issue")
     public void iCreateANewIssue() {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(chromeDriver)
+       /* Wait<WebDriver> wait = new FluentWait<WebDriver>(chromeDriver)
                 .withTimeout(Duration.ofSeconds(30))
                 .pollingEvery(Duration.ofSeconds(5))
-                .ignoring(NoSuchElementException.class);
-        WebElement createIssueBtn_inNavBar=chromeDriver.findElement(By.id("create_link"));
+                .ignoring(NoSuchElementException.class);*/
+        WebElement createIssueBtn_inNavBar = chromeDriver.findElement(By.id("create_link"));
         createIssueBtn_inNavBar.click();
         chromeDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         wait.until(ExpectedConditions.elementToBeClickable(chromeDriver.findElement(By.id("summary"))));
-        WebElement summaryInput_OfIssue_inPopUp= chromeDriver.findElement(By.id("summary"));
-       summaryInput_OfIssue_inPopUp.sendKeys(nameOfNewIssue);
-        WebElement createIssueBtn_inPopUp=chromeDriver.findElement(By.id("create-issue-submit"));
+        WebElement summaryInput_OfIssue_inPopUp = chromeDriver.findElement(By.id("summary"));
+        summaryInput_OfIssue_inPopUp.sendKeys(nameOfNewIssue);
+        WebElement createIssueBtn_inPopUp = chromeDriver.findElement(By.id("create-issue-submit"));
         createIssueBtn_inPopUp.click();
-        wait.until(ExpectedConditions.alertIsPresent());
-        //nem történik meg a refresh!!!!
+        wait.until(ExpectedConditions.invisibilityOf(chromeDriver.findElement(By.id("aui-flag-container"))));
         chromeDriver.navigate().refresh();
-//itt nem lássa az alert miatt, de hiába nyomom ki manuálisan akkor se megy tovább...
-        //a refresh nem történik meg
-        wait.until(ExpectedConditions.textToBePresentInElement(chromeDriver.findElement(By.id("main")),nameOfNewIssue ));
-       // WebElement main=chromeDriver.findElement(By.id("main"));
-        System.out.println("74");
-        String xpathExpression = String.format("//ol[@class='issue-list']/li/a[contains(text(), '%s')]", nameOfNewIssue);
-        WebElement newIssue=chromeDriver.findElement(By.xpath(xpathExpression));
+        //TODO:
+        String xpathExpression = String.format("//li[@title='%s']", nameOfNewIssue);
+        wait.until(ExpectedConditions.visibilityOf(chromeDriver.findElement(By.xpath(xpathExpression))));
+        WebElement newIssue = chromeDriver.findElement(By.xpath(xpathExpression));
         newIssue.click();
 
     }
 
     @Given("I am opening the edit issue tag")
     public void iAmOpeningTheEditIssueTag() {
-        WebElement title_OfSelectedIssue=chromeDriver.findElement(By.id("summary-val"));
-      wait.until(ExpectedConditions.textToBePresentInElement(title_OfSelectedIssue, nameOfNewIssue));
-        WebElement editIssueBtn=chromeDriver.findElement(By.id("edit-issue"));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@id='summary-val' and contains(text(), '" + nameOfNewIssue + "')]")));
+        WebElement editIssueBtn = chromeDriver.findElement(By.id("edit-issue"));
         editIssueBtn.click();
-        WebElement descriptionInput_inPopup=chromeDriver.findElement(By.id("mce_0_ifr"));
+        WebElement descriptionInput_inPopup = chromeDriver.findElement(By.id("mce_0_ifr"));
         wait.until(ExpectedConditions.visibilityOf(descriptionInput_inPopup));
     }
 
-    @When("I change the type of issue to {string}")
+  /*  @When("I change the type of issue to {string}")
     public void iChangeTheTypeOfIssueTo(String arg0) {
-        System.out.println("83 "+arg0);
-    }
+        System.out.println("83 " + arg0);
+    }*/
 
     @And("save my changes with Update")
     public void saveMyChangesWithUpdate() {
-        WebElement updateBtn_inPopup=chromeDriver.findElement(By.id("edit-issue-submit"));
+        WebElement updateBtn_inPopup = chromeDriver.findElement(By.id("edit-issue-submit"));
         updateBtn_inPopup.click();
     }
 
-    @Then("the type of issue has changed to {string}")
+   /* @Then("the type of issue has changed to {string}")
     public void theTypeOfIssueHasChangedTo(String arg0) {
-        System.out.println("93 "+arg0);
-    }
+        System.out.println("93 " + arg0);
+    }*/
 
     @When("I type {string} to description field")
     public void iTypeToDescriptionField(String descText) {
-        WebElement descriptionInput_inPopup=chromeDriver.findElement(By.id("mce_0_ifr"));
-            descriptionInput_inPopup.sendKeys(descText);
+        WebElement descriptionInput_inPopup = chromeDriver.findElement(By.id("mce_0_ifr"));
+        descriptionInput_inPopup.sendKeys(descText);
     }
 
     @Then("the description displays {string}")
     public void theDescriptionDisplays(String descText) {
-        WebElement descriptionOfIssue=chromeDriver.findElement(By.id("description-val"));
-        wait.until(ExpectedConditions.textToBePresentInElement(descriptionOfIssue, descText));
-        System.out.println(descriptionOfIssue.getText());
+        System.out.println("115 " + "do I see the text ? " + descText);
+        wait.until(ExpectedConditions.textToBePresentInElement(chromeDriver.findElement(By.xpath("//div[@id='description-val']/div/p")), descText));
+        WebElement descriptionOfIssue = chromeDriver.findElement(By.xpath("//div[@id='description-val']/div/p"));
+        assertEquals(descriptionOfIssue.getText(), descText);
     }
 
     @When("I change the priority to {string}")
-    public void iChangeThePriorityTo(String arg0) {
-        System.out.println("priority " + arg0);
+    public void iChangeThePriorityTo(String priority) {
+        WebElement priorityField = chromeDriver.findElement(By.xpath("//div[@id='priority-single-select']/span"));
+        priorityField.click();
+        System.out.println("127");
+      //  WebElement lowestPriority = chromeDriver.findElement(By.xpath("//a[@class='aui-list-item-link imagebacked aui-iconised-link' and contains(text(), 'Lowest')]"));
+      //  lowestPriority.click();
+        WebElement inputPriority=chromeDriver.findElement(By.id("priority-field"));
+        inputPriority.sendKeys(priority);
+        //screenshot
+        File screenshot = ((TakesScreenshot) chromeDriver).getScreenshotAs(OutputType.FILE);
+        String filename = String.format(".errorPicture/editIssue%d.png", errorCounter);
+        try {
+            FileUtils.copyFile(screenshot, new File(filename));
+            errorCounter++;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Then("the priority of issue displayed as {string}")
     public void thePriorityOfIssueDisplayedAs(String arg0) {
-        System.out.println("priority then " + arg0);
+        wait.until(ExpectedConditions.invisibilityOf(chromeDriver.findElement(By.id("aui-flag-container"))));
+        //if ()
+          Wait<WebDriver> wait = new FluentWait<WebDriver>(chromeDriver)
+                .withTimeout(Duration.ofSeconds(10))
+                .pollingEvery(Duration.ofSeconds(1))
+                .ignoring(NoSuchElementException.class);
+        //wait.until(ExpectedConditions.textToBePresentInElement(chromeDriver.findElement(By.id("priority-val")),"  Lowest                     "));
+        WebElement priority=chromeDriver.findElement(By.id("priority-val"));
+        System.out.println("138 "+priority.getText());
+
     }
 
     @After
-    public void tearDown(Scenario scenario){
-        if (scenario.isFailed()){
+    public void tearDown(Scenario scenario) {
+        if (scenario.isFailed()) {
             File screenshot = ((TakesScreenshot) chromeDriver).getScreenshotAs(OutputType.FILE);
-            String filename= String.format(".errorPicture/editIssue%d.png", errorCounter);
-            try{
+            String filename = String.format(".errorPicture/editIssue%d.png", errorCounter);
+            try {
                 FileUtils.copyFile(screenshot, new File(filename));
                 errorCounter++;
-            } catch(IOException e){
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
         //delete issue if exist
-        // create Exception for no such of issue
+        try {
+            WebElement element = chromeDriver.findElement(By.xpath("//h1[@id='summary-val' and contains(text(), '" + nameOfNewIssue + "')]"));
+            WebElement moreButton = chromeDriver.findElement(By.id("opsbar-operations_more"));
+            moreButton.click();
+            WebElement deleteIssue = chromeDriver.findElement(By.id("delete-issue"));
+            deleteIssue.click();
+            WebElement confirmDelete = chromeDriver.findElement(By.id("delete-issue-submit"));
+            confirmDelete.click();
+        } catch (NoSuchElementException e) {
+            throw new NoSuchElementException("Element not found", e);
+        }
         chromeDriver.quit();
     }
 }

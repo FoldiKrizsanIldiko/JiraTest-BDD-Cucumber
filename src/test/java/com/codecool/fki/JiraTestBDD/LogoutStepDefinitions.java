@@ -46,17 +46,17 @@ public class LogoutStepDefinitions {
     @When("I press LogOut button")
     public void iPressLogOutButton() {
         WebElement userOptions = chromeDriver.findElement(By.id("user-options"));
-        WebElement logOutBtn= chromeDriver.findElement(By.id("log_out"));
+        WebElement logOutBtn = chromeDriver.findElement(By.id("log_out"));
         userOptions.click();
         logOutBtn.click();
-        WebElement logOutSubmit= chromeDriver.findElement(By.id("confirm-logout-submit"));
+        WebElement logOutSubmit = chromeDriver.findElement(By.id("confirm-logout-submit"));
         logOutSubmit.click();
         System.out.println("When");
     }
 
     @Then("I am redirected to new login page")
     public void iAmRedirectedToNewLoginPage() {
-        WebElement contentOfPage= chromeDriver.findElement(By.id("content"));
+        WebElement contentOfPage = chromeDriver.findElement(By.id("content"));
         assertTrue(contentOfPage.getText().contains("You are now logged out."));
         System.out.println("Then");
     }
