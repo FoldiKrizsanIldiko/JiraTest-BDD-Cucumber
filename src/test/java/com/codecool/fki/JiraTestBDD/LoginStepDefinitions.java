@@ -97,7 +97,7 @@ public class LoginStepDefinitions {
         captchaField.isDisplayed();
     }
 
-    @After
+    @After("@test")
     public void tearDown(Scenario scenario) {
         if (scenario.isFailed()) {
             File screenshot = ((TakesScreenshot) chromeDriver).getScreenshotAs(OutputType.FILE);

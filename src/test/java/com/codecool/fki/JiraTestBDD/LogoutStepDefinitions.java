@@ -61,7 +61,7 @@ public class LogoutStepDefinitions {
         System.out.println("Then");
     }
 
-    @After
+    @After("@dddd")
     public void tearDown(Scenario scenario) {
         if (scenario.isFailed()) {
             File screenshot = ((TakesScreenshot) chromeDriver).getScreenshotAs(OutputType.FILE);

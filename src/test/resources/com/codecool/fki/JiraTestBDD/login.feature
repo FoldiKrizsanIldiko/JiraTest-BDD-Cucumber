@@ -4,6 +4,7 @@ Feature: Login
   Background:
     Given I open the Jira home page
 
+  @test
   Scenario: login with valid username and password
     Given I have valid username and password
     When I log in  with valid username and password
