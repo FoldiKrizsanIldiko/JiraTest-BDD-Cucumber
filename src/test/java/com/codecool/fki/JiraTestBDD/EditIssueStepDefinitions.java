@@ -18,7 +18,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -39,7 +38,7 @@ public class EditIssueStepDefinitions {
 
     private static final String nameOfNewIssue = "fki-BDD-testIssue";
 
-//Background:
+    //Background:
     @Given("I am logged in on Jira account")
     public void iAmLoggedInOnJiraAccount() {
         chromeDriver.get(homePage);
@@ -75,9 +74,9 @@ public class EditIssueStepDefinitions {
         wait.until(ExpectedConditions.invisibilityOf(chromeDriver.findElement(By.id("aui-flag-container"))));
         chromeDriver.navigate().refresh();
         //TODO:
-        String xpathExpression = String.format("//li[@title='%s']", nameOfNewIssue);
-        wait.until(ExpectedConditions.visibilityOf(chromeDriver.findElement(By.xpath(xpathExpression))));
-        WebElement newIssue = chromeDriver.findElement(By.xpath(xpathExpression));
+        String xpathOfNewIssue = String.format("//li[@title='%s']", nameOfNewIssue);
+        wait.until(ExpectedConditions.visibilityOf(chromeDriver.findElement(By.xpath(xpathOfNewIssue))));
+        WebElement newIssue = chromeDriver.findElement(By.xpath(xpathOfNewIssue));
         newIssue.click();
 
     }
@@ -91,10 +90,6 @@ public class EditIssueStepDefinitions {
         wait.until(ExpectedConditions.visibilityOf(descriptionInput_inPopup));
     }
 
-  /*  @When("I change the type of issue to {string}")
-    public void iChangeTheTypeOfIssueTo(String arg0) {
-        System.out.println("83 " + arg0);
-    }*/
 
     @And("save my changes with Update")
     public void saveMyChangesWithUpdate() {
@@ -102,10 +97,6 @@ public class EditIssueStepDefinitions {
         updateBtn_inPopup.click();
     }
 
-   /* @Then("the type of issue has changed to {string}")
-    public void theTypeOfIssueHasChangedTo(String arg0) {
-        System.out.println("93 " + arg0);
-    }*/
 
     @When("I type {string} to description field")
     public void iTypeToDescriptionField(String descText) {
@@ -115,7 +106,6 @@ public class EditIssueStepDefinitions {
 
     @Then("the description displays {string}")
     public void theDescriptionDisplays(String descText) {
-        System.out.println("115 " + "do I see the text ? " + descText);
         wait.until(ExpectedConditions.textToBePresentInElement(chromeDriver.findElement(By.xpath("//div[@id='description-val']/div/p")), descText));
         WebElement descriptionOfIssue = chromeDriver.findElement(By.xpath("//div[@id='description-val']/div/p"));
         assertEquals(descriptionOfIssue.getText(), descText);
@@ -125,10 +115,7 @@ public class EditIssueStepDefinitions {
     public void iChangeThePriorityTo(String priority) {
         WebElement priorityField = chromeDriver.findElement(By.xpath("//div[@id='priority-single-select']/span"));
         priorityField.click();
-        System.out.println("127");
-      //  WebElement lowestPriority = chromeDriver.findElement(By.xpath("//a[@class='aui-list-item-link imagebacked aui-iconised-link' and contains(text(), 'Lowest')]"));
-      //  lowestPriority.click();
-        WebElement inputPriority=chromeDriver.findElement(By.id("priority-field"));
+        WebElement inputPriority = chromeDriver.findElement(By.id("priority-field"));
         inputPriority.sendKeys(priority);
         //screenshot
         File screenshot = ((TakesScreenshot) chromeDriver).getScreenshotAs(OutputType.FILE);
@@ -143,19 +130,18 @@ public class EditIssueStepDefinitions {
 
     @Then("the priority of issue displayed as {string}")
     public void thePriorityOfIssueDisplayedAs(String arg0) {
-        wait.until(ExpectedConditions.invisibilityOf(chromeDriver.findElement(By.id("aui-flag-container"))));
-        //if ()
-          Wait<WebDriver> wait = new FluentWait<WebDriver>(chromeDriver)
-                .withTimeout(Duration.ofSeconds(10))
+        // wait.until(ExpectedConditions.invisibilityOf(chromeDriver.findElement(By.id("aui-flag-container"))));
+        Wait<WebDriver> fluentWait = new FluentWait<WebDriver>(chromeDriver)
+                .withTimeout(Duration.ofSeconds(20))
                 .pollingEvery(Duration.ofSeconds(1))
                 .ignoring(NoSuchElementException.class);
-        //wait.until(ExpectedConditions.textToBePresentInElement(chromeDriver.findElement(By.id("priority-val")),"  Lowest                     "));
-        WebElement priority=chromeDriver.findElement(By.id("priority-val"));
-        System.out.println("138 "+priority.getText());
-
+        WebElement anotherDynamicElement = fluentWait.until(driver -> driver.findElement(By.xpath("//*[@id= 'priority-val']/img[@title='Lowest - Trivial problem with little or no impact on progress.']")));
+        WebElement priority = chromeDriver.findElement(By.id("priority-val"));
+        System.out.println("138 " + priority.getText());
+        System.out.println("148    " + chromeDriver.findElement(By.xpath("//*[@id=\"priority-val\"]/img")).getAttribute("title"));
     }
 
-    @After
+    @After("@aaa")
     public void tearDown(Scenario scenario) {
         if (scenario.isFailed()) {
             File screenshot = ((TakesScreenshot) chromeDriver).getScreenshotAs(OutputType.FILE);
